@@ -1,23 +1,21 @@
 from tkinter import*
 from tkinter import ttk
 from PIL import Image,ImageTk
-import tkinter
 from tkinter import messagebox
-#from train import train
+import mysql.connector
+import cv2
 import os
 import csv
 from tkinter import filedialog
 
-#from help import Help_Desk
-#from developer import develop
-
 
 mydata=[]
+
+
 class Attendance:
     def __init__(self,root):
-        
         self.root=root
-        self.root.geometry("1280x720+0+0")
+        self.root.geometry("1530x790+0+0")
         self.root.title("Face Recognition System")
 
         self.var_atten_id=StringVar()
@@ -29,151 +27,121 @@ class Attendance:
         self.var_atten_attendance=StringVar()
 
 
-        S_w=root.winfo_screenwidth()
-        S_h=root.winfo_screenheight()
-        if S_w > 1280:
-            w = S_w / 1280
-        else:
-            w = 1 / (1280 / S_w) 
-        if S_h > 720:
-            h = S_h / 720
-        else:
-            h = 1 / (720 / S_h)
+
+        img=Image.open(r"C:\Users\SNEHA PANJA\OneDrive\Desktop\Face Recognition\college_images\smart-attendance.jpg")
+        img=img.resize((620,150),Image.ANTIALIAS)
+        self.photoimg=ImageTk.PhotoImage(img)
+
+        f_lbl=Label(self.root,image=self.photoimg)
+        f_lbl.place(x=0,y=0,width=620,height=150)
 
 
-         
-
-        
-        
-
-    # first image
-        img1=Image.open(r"Image Content\XYZins.jpg")
-        img1=img1.resize((int(130*w),int(130*h)),Image.Resampling.NEAREST)
+        img1=Image.open(r"C:\Users\SNEHA PANJA\OneDrive\Desktop\Face Recognition\college_images\iStock-182059956_18390_t12.jpg")
+        img1=img1.resize((650,150),Image.ANTIALIAS)
         self.photoimg1=ImageTk.PhotoImage(img1)
 
         f_lbl=Label(self.root,image=self.photoimg1)
-        
-        f_lbl.place(x=0*w,y=0*h,width=130*w,height=130*h)
-        
+        f_lbl.place(x=620,y=0,width=650,height=150)
 
-    # second image
-        img2=Image.open(r"Image Content\main1.jpg")
-        img2=img2.resize((int(1000*w),int(130*h)),Image.Resampling.NEAREST)
-        self.photoimg2=ImageTk.PhotoImage(img2)
 
-        f_lbl=Label(self.root,image=self.photoimg2)
-        f_lbl.place(x=130*w,y=0*h,width=1000*w,height=130*h)
-    
-    # Third image
-        img3=Image.open(r"Image Content\main2.png")
-        img3=img3.resize((int(150*w),int(130*h)),Image.Resampling.NEAREST)
+        img3=Image.open(r"C:\Users\SNEHA PANJA\OneDrive\Desktop\Face Recognition\college_images\wp2551980.jpg")
+        img3=img3.resize((1530,570),Image.ANTIALIAS)
         self.photoimg3=ImageTk.PhotoImage(img3)
 
-        f_lbl=Label(self.root,image=self.photoimg3)
-        f_lbl.place(x=1130*w,y=0*h,width=150*w,height=130*h)
-    
+        bg_img=Label(self.root,image=self.photoimg3)
+        bg_img.place(x=0,y=150,width=1530,height=570)
 
-    # Background image
-        img4=Image.open(r"Image Content\bgimage.jpg")
-        img4=img4.resize((int(1280*w),int(590*h)),Image.Resampling.NEAREST)
-        
-        self.photoimg4=ImageTk.PhotoImage(img4)
+        title_lbl=Label(bg_img,text="ATTENDANCE MANAGEMENT SYSTEM",font=("times new roman",35,"bold"),bg="white",fg="darkgreen")
+        title_lbl.place(x=0,y=0,width=1300,height=40)
 
-        bg_lbl=Label(self.root,image=self.photoimg4)
-        bg_lbl.place(x=0*w,y=130*h,width=1280*w,height=590*h)
-        
+        main_frame=Frame(bg_img,bd=2,bg="white")
+        main_frame.place(x=5,y=45,width=1260,height=440)
 
-        title_lbl=Label(bg_lbl,text="ATTENDANCE SYSTEM SOFTWARE",font=("Segoe Print",int(28*w),"bold"),bg="navy blue",fg="white")
-        title_lbl.place(x=0*w,y=0*h,width=1280*w,height=35*h)
 
-        main_frame=Frame(bg_lbl,bd=2,bg="white")
-        main_frame.place(x=5*w,y=45*h,width=1260*w,height=440*h)
-
-      #Left Frame
         Left_frame=LabelFrame(main_frame,bd=2,bg="white",relief=RIDGE,text="Student's Attendance Details",font=("times new roman",12,"bold"))
-        Left_frame.place(x=10*w,y=10*h,width=630*w,height=425*h)
+        Left_frame.place(x=10,y=10,width=630,height=425)
 
-        img_left=Image.open(r"Image Content\main2.png")
-        img_left=img_left.resize((615,100),Image.Resampling.NEAREST)
+        img_left=Image.open(r"C:\Users\SNEHA PANJA\OneDrive\Desktop\Face Recognition\college_images\AdobeStock_303989091.jpeg")
+        img_left=img_left.resize((615,100),Image.ANTIALIAS)
         self.PhotoImage_left=ImageTk.PhotoImage(img_left)
 
         f_lbl=Label(Left_frame,image=self.PhotoImage_left)
-        f_lbl.place(x=5*w,y=0*h,width=615*w,height=100*h)
+        f_lbl.place(x=5,y=0,width=615,height=100)
 
 
         left_inside_frame=Frame(Left_frame,bd=2,relief=RIDGE,bg="white")
-        left_inside_frame.place(x=0*w,y=105*h,width=625*w,height=295*h)
+        left_inside_frame.place(x=0,y=105,width=625,height=295)
 
-        attendanceId_label=Label(left_inside_frame,text="Attendance Id :",font=("comicsansns",int(11*w),"bold"),bg="white")
+        attendanceId_label=Label(left_inside_frame,text="Attendance Id :",font=("comicsansns",11,"bold"),bg="white")
         attendanceId_label.grid(row=0,column=0,padx=5,pady=5,sticky=W)
 
-        attendanceId_entry=ttk.Entry(left_inside_frame,width=int(20*w),font=("comicsansns",int(11*w),"bold"))
+        attendanceId_entry=ttk.Entry(left_inside_frame,width=20,textvariable=self.var_atten_id,font=("comicsansns",11,"bold"))
         attendanceId_entry.grid(row=0,column=1,padx=5,pady=5,sticky=W)
 
 
-        rollLabel=Label(left_inside_frame,text="Roll :",font=("comicsansns",int(11*w),"bold"),bg="white")
-        rollLabel.grid(row=1,column=0,padx=5,pady=5,sticky=W)
+        rollLabel=Label(left_inside_frame,text="Roll :",font=("comicsansns",11,"bold"),bg="white")
+        rollLabel.grid(row=0,column=2,padx=5,sticky=W)
 
-        atten_roll=ttk.Entry(left_inside_frame,width=int(20*w),font=("comicsansns",int(11*w),"bold"))
-        atten_roll.grid(row=1,column=1,padx=5,pady=5,sticky=W)
-
-
-        nameLabel=Label(left_inside_frame,text="Name :",font=("comicsansns",int(11*w),"bold"),bg="white")
-        nameLabel.grid(row=2,column=0,padx=5,pady=5,sticky=W)
-
-        atten_name=ttk.Entry(left_inside_frame,width=int(20*w),font=("comicsansns",int(11*w),"bold"))
-        atten_name.grid(row=2,column=1,padx=5,pady=5,sticky=W)
+        atten_roll=ttk.Entry(left_inside_frame,width=20,textvariable=self.var_atten_roll,font=("comicsansns",11,"bold"))
+        atten_roll.grid(row=0,column=3,padx=5,sticky=W)
 
 
-        depLabel=Label(left_inside_frame,text="Department :",font=("comicsansns",int(11*w),"bold"),bg="white")
-        depLabel.grid(row=3,column=0,padx=5,pady=5,sticky=W)
+        nameLabel=Label(left_inside_frame,text="Name :",font=("comicsansns",11,"bold"),bg="white")
+        nameLabel.grid(row=1,column=0,padx=25,sticky=W)
 
-        atten_dep=ttk.Entry(left_inside_frame,width=int(20*w),font=("comicsansns",int(11*w),"bold"))
-        atten_dep.grid(row=3,column=1,padx=5,pady=5,sticky=W)
+        atten_name=ttk.Entry(left_inside_frame,width=20,textvariable=self.var_atten_name,font=("comicsansns",11,"bold"))
+        atten_name.grid(row=1,column=1,padx=5,sticky=W)
 
 
+        depLabel=Label(left_inside_frame,text="Department :",font=("comicsansns",11,"bold"),bg="white")
+        depLabel.grid(row=1,column=2,padx=5,sticky=W)
 
-        timeLabel=Label(left_inside_frame,text="Time :",font=("comicsansns",int(11*w),"bold"),bg="white")
-        timeLabel.grid(row=4,column=0,padx=5,pady=5,sticky=W)
-
-        atten_time=ttk.Entry(left_inside_frame,width=int(20*w),font=("comicsansns",int(11*w),"bold"))
-        atten_time.grid(row=4,column=1,padx=5,pady=5,sticky=W)
+        atten_dep=ttk.Entry(left_inside_frame,width=20,textvariable=self.var_atten_dep,font=("comicsansns",11,"bold"))
+        atten_dep.grid(row=1,column=3,padx=5,sticky=W)
 
 
 
-        dateLabel=Label(left_inside_frame,text="Date :",font=("comicsansns",int(11*w),"bold"),bg="white")
-        dateLabel.grid(row=5,column=0,padx=5,pady=5,sticky=W)
+        timeLabel=Label(left_inside_frame,text="Time :",font=("comicsansns",11,"bold"),bg="white")
+        timeLabel.grid(row=2,column=0,padx=25,pady=5,sticky=W)
 
-        atten_date=ttk.Entry(left_inside_frame,width=int(20*w),font=("comicsansns",int(11*w),"bold"))
-        atten_date.grid(row=5,column=1,padx=5,pady=5,sticky=W)
-
-
+        atten_time=ttk.Entry(left_inside_frame,width=20,textvariable=self.var_atten_time,font=("comicsansns",11,"bold"))
+        atten_time.grid(row=2,column=1,padx=5,pady=5,sticky=W)
 
 
 
-        attendanceLabel=Label(left_inside_frame,text="Attendance Status :",font=("comicsansns",int(11*w),"bold"),bg="white")
-        attendanceLabel.grid(row=6,column=0,padx=5,pady=5,sticky=W)
+        dateLabel=Label(left_inside_frame,text="Date :",font=("comicsansns",11,"bold"),bg="white")
+        dateLabel.grid(row=2,column=2,padx=5,pady=5,sticky=W)
 
-        self.atten_status=ttk.Combobox(left_inside_frame,width=int(20*w),font=("comicsansns",int(11*w),"bold"),state="readonly")
+        atten_date=ttk.Entry(left_inside_frame,width=20,textvariable=self.var_atten_date,font=("comicsansns",11,"bold"))
+        atten_date.grid(row=2,column=3,padx=5,pady=5,sticky=W)
+
+
+
+
+
+        attendanceLabel=Label(left_inside_frame,text="Attendance Status :",font=("comicsansns",11,"bold"),bg="white")
+        attendanceLabel.grid(row=3,column=0,padx=5,sticky=W)
+
+        self.atten_status=ttk.Combobox(left_inside_frame,width=18,textvariable=self.var_atten_attendance,font=("comicsansns",11,"bold"),state="readonly")
         self.atten_status["values"]=("Status","Present","Absent")
         self.atten_status.current(0)
-        self.atten_status.grid(row=6,column=1,padx=5,pady=5,sticky=W)
+        self.atten_status.grid(row=3,column=1,padx=5,pady=5,sticky=W)
 
 
 
         btn_frame=Frame(left_inside_frame,bd=2,relief=RIDGE,bg="white")
-        btn_frame.place(x=7*w,y=250*h,width=605*w,height=30*h)
+        btn_frame.place(x=0,y=250,width=620,height=35)
 
-        save_btn=Button(btn_frame,text="Import csv",command=self.importcsv,width=int(16*w),font=("times new roman",12,"bold"),bg="blue",fg="white")
+        save_btn=Button(btn_frame,text="Import csv",command=self.importcsv,width=16,font=("times new roman",12,"bold"),bg="blue",fg="white")
         save_btn.grid(row=0,column=0)
 
-        update_btn=Button(btn_frame,text="Export csv",command=self.exportCsv,width=int(16*w),font=("times new roman",12,"bold"),bg="blue",fg="white")
+        update_btn=Button(btn_frame,text="Export csv",command=self.exportCsv,width=16,font=("times new roman",12,"bold"),bg="blue",fg="white")
         update_btn.grid(row=0,column=1)
 
-        delete_btn=Button(btn_frame,text="Update",width=int(16*w),font=("times new roman",12,"bold"),bg="blue",fg="white")
+        delete_btn=Button(btn_frame,text="Update",width=16,font=("times new roman",12,"bold"),bg="blue",fg="white")
         delete_btn.grid(row=0,column=2)
 
-        reset_btn=Button(btn_frame,text="Reset",command=self.reset_data,width=int(16*w),font=("times new roman",12,"bold"),bg="blue",fg="white")
+        reset_btn=Button(btn_frame,text="Reset",command=self.reset_data,width=16,font=("times new roman",12,"bold"),bg="blue",fg="white")
         reset_btn.grid(row=0,column=3)
 
 
@@ -185,10 +153,10 @@ class Attendance:
 
 
         Right_frame=LabelFrame(main_frame,bd=2,bg="white",relief=RIDGE,text="Attendance Details",font=("times new roman",12,"bold"))
-        Right_frame.place(x=645*w,y=10*h,width=600*w,height=425*h)
+        Right_frame.place(x=645,y=10,width=600,height=425)
 
         table_frame=Frame(Right_frame,bd=2,relief=RIDGE,bg="white")
-        table_frame.place(x=5*w,y=5*h,width=587*w,height=395*h)
+        table_frame.place(x=5,y=5,width=587,height=395)
 
         scroll_x=ttk.Scrollbar(table_frame,orient=HORIZONTAL)
         scroll_y=ttk.Scrollbar(table_frame,orient=VERTICAL)
@@ -228,7 +196,7 @@ class Attendance:
 
 
 
-   #=============fetch data=========
+
 
     def fetchData(self,rows):
       self.AttendanceReportTable.delete(*self.AttendanceReportTable.get_children())
@@ -244,7 +212,7 @@ class Attendance:
           for i in csvread:
              mydata.append(i)
           self.fetchData(mydata)
-          
+
 
 
 
